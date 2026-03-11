@@ -33,122 +33,156 @@ public class LocationServicesActivity extends AppCompatActivity {
     double latitude;
     double longitude;
 
+    TextView tvlat;
+    TextView tvlng;
+    TextView tvaddr;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_services);
 
+        tvlat = findViewById(R.id.textViewLatitude);
+        tvlng = findViewById(R.id.textViewLongitude);
+        tvaddr = findViewById(R.id.textViewAddress);
+
         requestPermissions();
-        createLocationServicesClient();
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         createLocationRequestLocationCallback();
+
+        getLastLocation();
     }
 
 
     public boolean requestPermissions() {
+
         int REQUEST_PERMISSION = 3000;
+
         String permissions[] = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
 
-        boolean fineGranted =
+        boolean grantFinePermission =
                 ContextCompat.checkSelfPermission(this, permissions[0]) ==
                         PackageManager.PERMISSION_GRANTED;
 
-        boolean coarseGranted =
+        boolean grantCoarsePermission =
                 ContextCompat.checkSelfPermission(this, permissions[1]) ==
                         PackageManager.PERMISSION_GRANTED;
 
-        if (!fineGranted && !coarseGranted) {
-            ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSION);
-        } else if (!fineGranted) {
-            ActivityCompat.requestPermissions(this, new String[]{permissions[0]}, REQUEST_PERMISSION);
-        } else if (!coarseGranted) {
-            ActivityCompat.requestPermissions(this, new String[]{permissions[1]}, REQUEST_PERMISSION);
+        if (!grantFinePermission && !grantCoarsePermission) {
+
+            ActivityCompat.requestPermissions(this, permissions,
+                    REQUEST_PERMISSION);
+
+        } else if (!grantFinePermission) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{permissions[0]}, REQUEST_PERMISSION);
+
+        } else if (!grantCoarsePermission) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{permissions[1]}, REQUEST_PERMISSION);
         }
 
-        return fineGranted && coarseGranted;
+        return grantFinePermission && grantCoarsePermission;
     }
 
 
-    public void createLocationServicesClient() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+    public void getLastLocation() {
 
         if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
         fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, location -> startLocationUpdates());
+                .addOnSuccessListener(this, location -> {
+
+                    if (location != null) {
+
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+
+                        tvlat.setText("Latitude: " + latitude);
+                        tvlng.setText("Longitude: " + longitude);
+
+                        showLocationAddress();
+                    }
+
+                    startLocationUpdates();
+                });
     }
 
 
     public void createLocationRequestLocationCallback() {
+
         locationRequest = new LocationRequest.Builder(
                 Priority.PRIORITY_HIGH_ACCURACY, 2000).build();
 
         locationCallback = new LocationCallback() {
+
             @Override
             public void onLocationResult(LocationResult locationResult) {
+
                 Location loc = locationResult.getLastLocation();
 
-                if (loc == null) {
-                    return;
-                }
+                if (loc == null) return;
 
                 latitude = loc.getLatitude();
                 longitude = loc.getLongitude();
 
-                updateLatLngUI();
-                getAddressFromGeocoder();
+                tvlat.setText("Latitude: " + latitude);
+                tvlng.setText("Longitude: " + longitude);
+
+                showLocationAddress();
             }
         };
     }
 
 
-    private void updateLatLngUI() {
-        TextView tvlat = findViewById(R.id.textViewLatitude);
-        TextView tvlng = findViewById(R.id.textViewLongitude);
-
-        tvlat.setText("Latitude: " + latitude);
-        tvlng.setText("Longitude: " + longitude);
-    }
-
-
-    private void getAddressFromGeocoder() {
-        TextView tvaddr = findViewById(R.id.textViewAddress);
+    public void showLocationAddress() {
 
         try {
+
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
-            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            List<Address> addresses =
+                    geocoder.getFromLocation(latitude, longitude, 1);
 
-            if (addresses == null || addresses.isEmpty()) {
+            if (addresses != null && !addresses.isEmpty()) {
+
+                Address addr = addresses.get(0);
+
+                tvaddr.setText("Address: " + addr.getAddressLine(0));
+
+            } else {
+
                 tvaddr.setText("Address: Unknown");
-                return;
             }
-
-            Address addr = addresses.get(0);
-            StringBuilder fullAddress = new StringBuilder("Address:\n");
-
-            for (int i = 0; i <= addr.getMaxAddressLineIndex(); i++) {
-                fullAddress.append(addr.getAddressLine(i)).append("\n");
-            }
-
-            tvaddr.setText(fullAddress.toString());
 
         } catch (Exception e) {
+
             tvaddr.setText("Address: 22 Guraguma St, Bruce ACT");
         }
     }
 
+
     public void startLocationUpdates() {
+
         if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
