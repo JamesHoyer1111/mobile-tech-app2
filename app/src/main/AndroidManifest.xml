@@ -2,8 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -15,9 +21,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MobileTechApp2">
         <activity
+            android:name=".MLKitActivity"
+            android:exported="false" />
+        <activity
             android:name=".LocationServicesActivity"
             android:exported="false" />
-
         <activity
             android:name=".StartActivity"
             android:exported="true">

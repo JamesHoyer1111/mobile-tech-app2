@@ -41,5 +41,18 @@ public class StartActivity extends AppCompatActivity {
             }
         });
 
+        // Firebase ML Kit button
+        Button mlkitButton = findViewById(R.id.buttonMLKit);
+
+        mlkitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(StartActivity.this, MLKitActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
     }
 }
