@@ -16,43 +16,43 @@ public class StartActivity extends AppCompatActivity {
 
         // UI and Events button
         Button button = findViewById(R.id.buttonUIEvent);
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(StartActivity.this, MainActivity.class);
                 intent.putExtra("message", "Hello World!");
                 startActivity(intent);
-
             }
         });
 
         // Location Services button
         Button locationButton = findViewById(R.id.buttonLocationServices);
-
         locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(StartActivity.this, LocationServicesActivity.class);
                 startActivity(intent);
-
             }
         });
 
         // Firebase ML Kit button
         Button mlkitButton = findViewById(R.id.buttonMLKit);
-
         mlkitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(StartActivity.this, MLKitActivity.class);
                 startActivity(intent);
-
             }
         });
 
+        // SQLite button
+        Button sqliteButton = findViewById(R.id.buttonSQLite);
+        sqliteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StartActivity.this, SQLiteActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
