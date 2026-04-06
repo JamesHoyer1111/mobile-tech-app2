@@ -28,6 +28,12 @@
         android:theme="@style/Theme.MobileTechApp2">
 
         <activity
+            android:name=".MultimediaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AnimationActivity"
+            android:exported="false" />
+        <activity
             android:name=".SQLiteActivity"
             android:exported="false" />
         <activity
